@@ -1,9 +1,9 @@
 // MODULE PATTERN PROJECT
 
-// STORAGE CONTROLLER
+/////////////////////////////////////// STORAGE CONTROLLER ///////////////////////////////////////
 
 
-// ITEM CONTROLLER
+/////////////////////////////////////// ITEM CONTROLLER ///////////////////////////////////////
 // IFFE, immediately invoked
 const ItemCtrl = (function(){
     // Item Constructor
@@ -29,6 +29,28 @@ const ItemCtrl = (function(){
         getItems: function(){
             return data.items;
         },
+        addItem: function(name, calories){
+            let ID;
+            // Create ID
+            if(data.items.length > 0){
+                // Grabbing the last item in data.items and adding one to it's ID for auto increment
+                ID = data.items[data.items.length - 1].id + 1;
+            }  
+            else {
+                ID = 0;
+            }
+
+            // Calories to number
+            calories = parseInt(calories);
+
+            // Create new item
+            newItem = new Item(id, name, calories);
+
+            // Add to items array
+            data.items.push(newItem);
+
+            return newItem;
+        },
         logData: function(){
             return data;
         }
@@ -36,11 +58,14 @@ const ItemCtrl = (function(){
 
 })();
 
-// UI CONTROLLER
+/////////////////////////////////////// UI CONTROLLER ///////////////////////////////////////
 const UICtrl = (function(){
     // All UI Vars for easy changes
     const UISelectors = {
-        itemList: '#item-list'
+        itemList: '#item-list',
+        addBtn: '.add-btn',
+        itemNameInput: '#item-name',
+        itemCaloriesInput: '#item-calories',
     }
     
     // public methods
@@ -58,12 +83,43 @@ const UICtrl = (function(){
 
             // Insert list items 
             document.querySelector(UISelectors.itemList).innerHTML = html;
+        },
+        getItemInput: function(){
+            return {
+                name: document.querySelector(UISelectors.itemNameInput).value,
+                calories: document.querySelector(UISelectors.itemCaloriesInput).value
+            }
+        },
+        getSelectors: function(){
+            return UISelectors;
         }
     }
 })();
 
-// APP CONTROLLER
+/////////////////////////////////////// APP CONTROLLER ///////////////////////////////////////
 const App = (function(ItemCtrl, UICtrl){
+    // Load Event Listeners
+    const loadEventListeners = function(){
+        // Get selectors from UI 
+        UISelectors = UICtrl.getSelectors();
+
+        // Add item event
+        document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
+    }
+
+    // Add Item
+    const itemAddSubmit = function() {
+        // Get form input from UI Controller
+        const input = UICtrl.getItemInput();
+
+        // check for name and calorie input
+        if(input.name !== '' && input.calories !== ''){
+            // Add Item
+            const newItem = ItemCtrl.addItem(input.name, input.calories);
+        }
+
+        e.preventDefault();
+    }
     
     // Returning from module makes public 
     return {
@@ -74,6 +130,9 @@ const App = (function(ItemCtrl, UICtrl){
 
             // Populate List with Items
             UICtrl.populateItemList(items);
+
+            // Load Event Listeners
+            loadEventListeners();
         }
     }
 
