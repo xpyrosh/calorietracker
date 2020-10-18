@@ -44,7 +44,7 @@ const ItemCtrl = (function(){
             calories = parseInt(calories);
 
             // Create new item
-            newItem = new Item(id, name, calories);
+            newItem = new Item(ID, name, calories);
 
             // Add to items array
             data.items.push(newItem);
@@ -108,7 +108,7 @@ const App = (function(ItemCtrl, UICtrl){
     }
 
     // Add Item
-    const itemAddSubmit = function() {
+    const itemAddSubmit = function(e) {
         // Get form input from UI Controller
         const input = UICtrl.getItemInput();
 
