@@ -1,7 +1,46 @@
 // MODULE PATTERN PROJECT
 
 /////////////////////////////////////// STORAGE CONTROLLER ///////////////////////////////////////
+const StorageCtrl = (function(){
+    
 
+
+    // Public Methods
+    return {
+        storeItem: function(item){
+            let items;
+            // Check if there are already items in the LS
+            if(localStorage.getItem('items')===null){
+                items = [];
+                // Push new item
+                items.push(item);
+                // Set LS
+                localStorage.setItem('items', JSON.stringify(items));
+            }
+            else {
+                // Get what is already in LS and parse to obj
+                items = JSON.parse(localStorage.getItem('items'));
+
+                // Push new item
+                items.push(item);
+
+                // Re-set LS
+                localStorage.setItem('items', JSON.stringify(items));
+            }
+        },
+        getItemsFromStorage: function(){
+            let items;
+
+            if(localStorage.getItem('items')===null){
+                items = [];
+            }
+            else {
+                items = JSON.parse(localStorage.getItem('items'));
+            }
+            return items;
+        }
+    }
+})();
 
 /////////////////////////////////////// ITEM CONTROLLER ///////////////////////////////////////
 // IFFE, immediately invoked
@@ -15,11 +54,12 @@ const ItemCtrl = (function(){
 
     // Data Structure / State
     const data = {
-        items: [
-            // {id: 0, name: 'Steak Dinner', calories: 1500},
-            // {id: 1, name: 'Cookie', calories: 450},
-            // {id: 2, name: 'Eggs', calories: 350}
-        ],
+        // items: [
+        //     // {id: 0, name: 'Steak Dinner', calories: 1500},
+        //     // {id: 1, name: 'Cookie', calories: 450},
+        //     // {id: 2, name: 'Eggs', calories: 350}
+        // ],
+        items: StorageCtrl.getItemsFromStorage(),
         currentItem: null,
         totalCalories: 0
     }
@@ -238,7 +278,7 @@ const UICtrl = (function(){
 })();
 
 /////////////////////////////////////// APP CONTROLLER ///////////////////////////////////////
-const App = (function(ItemCtrl, UICtrl){
+const App = (function(ItemCtrl, UICtrl, StorageCtrl){
     // Load Event Listeners
     const loadEventListeners = function(){
         // Get selectors from UI 
@@ -289,6 +329,9 @@ const App = (function(ItemCtrl, UICtrl){
 
             // Add total calories to UI
             UICtrl.showTotalCalories(totalCalories);
+
+            // Store in LS
+            StorageCtrl.storeItem(newItem);
 
             // Clear fields
             UICtrl.clearInput();
@@ -414,7 +457,7 @@ const App = (function(ItemCtrl, UICtrl){
         }
     }
 
-})(ItemCtrl, UICtrl);
+})(ItemCtrl, UICtrl, StorageCtrl);
 
 // Initialize App
 App.init();
